@@ -22,3 +22,6 @@ Resources:
       Runtime: python3.9
       Architectures:
       - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: InjectedTableName
