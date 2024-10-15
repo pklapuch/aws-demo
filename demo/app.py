@@ -36,3 +36,4 @@ def lambda_handler(event, context):
     response['items'] = items
     
     return response
+

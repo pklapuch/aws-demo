@@ -11,7 +11,7 @@ TABLE_NAME = "FillUp"
 def lambda_environment():
     os.environ[ENV_TABLE_NAME] = TABLE_NAME
 
-def mock_database(item):
+def mock_table():
     dynamodb_resource = boto3.resource("dynamodb")
     table = dynamodb_resource.create_table(
         TableName=TABLE_NAME,
@@ -25,12 +25,16 @@ def mock_database(item):
         ],
         ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
     )
+
+    return table
+
+def mock_database(item):
+    table = mock_table();
     table.put_item(Item=item)
 
 @mock_aws
 def test_lambda_handler(lambda_environment):
     """On successful execution returns all stored items"""
-    
     storedItem = {
         "userID": "1",
         "SK": "test",
