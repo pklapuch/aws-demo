@@ -20,6 +20,9 @@ Resources:
       Runtime: python3.9
       Architectures:
       - x86_64
+      Policies:
+      - DynamoDBWritePolicy:
+          TableName: FillUp
   
   FillUpTable:
     Type: AWS::DynamoDB::Table
