@@ -8,16 +8,35 @@ Globals:
     Timeout: 30
     MemorySize: 128
 
-    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
     LoggingConfig:
       LogFormat: JSON
 Resources:
-  AddFillUp:
+  AddFillUpFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: AddFillUp
+      FunctionName: FillUp
       CodeUri: demo/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
       - x86_64
+  
+  FillUpTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: FillUp
+      AttributeDefinitions:
+        - AttributeName: userID
+          AttributeType: S
+        - AttributeName: date
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userID
+          KeyType: HASH
+        - AttributeName: date
+          KeyType: RANGE
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
