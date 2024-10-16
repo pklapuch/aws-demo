@@ -1,12 +1,11 @@
-import json
-import os
 import boto3
 import boto3.dynamodb.conditions as conditions
 from requests import get
-from demo.FillUp.ServerErrorCode import ServerErrorCode
-from demo.FillUp.AddFillUpRequest import AddFillUpRequest
-from demo.FillUp.JSONValidationError import JSONValidationError
-from demo.FillUp.ProcessingError import ProcessingError
+
+from .ServerErrorCode import ServerErrorCode
+from .AddFillUpRequest import AddFillUpRequest
+from .JSONValidationError import JSONValidationError
+from .ProcessingError import ProcessingError
 
 TABLE_NAME = "FillUp"
 

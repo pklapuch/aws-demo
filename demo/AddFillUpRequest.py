@@ -1,4 +1,4 @@
-from demo.FillUp.JSONValidationError import JSONValidationError
+from .JSONValidationError import JSONValidationError
 from decimal import Decimal
 
 class AddFillUpRequest:

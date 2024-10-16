@@ -1,5 +1,5 @@
 import pytest
-from demo.FillUp.AddFillUpRequest import AddFillUpRequest
+from demo.AddFillUpRequest import AddFillUpRequest
 
 def test_parseJson_withValidJson_deliversItem():
     modelJson = {
