@@ -4,9 +4,9 @@ import os
 import json
 from decimal import Decimal
 from moto import mock_aws
-from demo.app import lambda_handler
-from demo.app import TABLE_NAME
-from demo.app import ServerErrorCode
+from demo.demo.app import lambda_handler
+from demo.demo.app import TABLE_NAME
+from demo.demo.app import ServerErrorCode
 
 @mock_aws
 def test_withUnsupportedHttpMethod__deliversError():
