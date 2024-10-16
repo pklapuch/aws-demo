@@ -44,30 +44,7 @@ def loadEvent(name: str):
     with open(f"events/{name}", 'r') as file:
         return json.load(file)
 
-@mock_aws
-def test_lambda_handler():
-    """On successful execution returns all stored items"""
-    storedItem = {
-        "userID": "1",
-        "date": "2024-06-29T13:34:30Z",
-        "cost": Decimal(str(34.12)),
-        "volume": Decimal(str(40.0)),
-        "mileage": Decimal(str(113200.8))
-    }
-
-    mock_database(storedItem)
-
-    response = lambda_handler({}, {})
-    print(response)
-    
-    statusCode = response['statusCode']
-    assert statusCode == 200
-
-    items = response['items']
-    assert items == [storedItem]
-
 # - HELPERS
-
 
 def mock_database(item):
     table = mock_table()

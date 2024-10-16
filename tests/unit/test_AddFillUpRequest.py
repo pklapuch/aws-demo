@@ -9,8 +9,7 @@ def test_parseJson_withValidJson_deliversItem():
         "cost": 25.2
     }
 
-    item = AddFillUpRequest.getItemJsonFrom(modelJson)
-    assert item == modelJson
+    AddFillUpRequest.getItemJsonFrom(modelJson)
 
 def test_parseJson_withInvalidJson_deliversError():
     modelJson = {

@@ -37,7 +37,8 @@ def lambda_handler(event, context):
 
 def post_handler(event, context):
     try:
-        item = AddFillUpRequest.getItemJsonFrom(event['body'])
+        body = extract_body(event)
+        item = AddFillUpRequest.getItemJsonFrom(body)
         userID = event['requestContext']['authorizer']['claims']['sub']
         insert_fillup_for_user(userID, item)
     except Exception as error:
@@ -52,21 +53,6 @@ def post_handler(event, context):
 def method_not_supported(method):
     raise ProcessingError(ServerErrorCode.unsupportedHttpMehod, f"Unsupported Method: {method}")
 
-    # response = {}
-    # items = []
-    
-    # try:
-    #     items = get_fillUps_for_user("1")
-    # except Exception as error:
-    #     print(f"Error: {repr(error)}")
-    # except:
-    #     print("Unknown error")
-    
-    # response['statusCode'] = 200
-    # response['items'] = items
-    
-    # return response
-
 # - HELPERS
 
 def insert_fillup_for_user(user_id: str, item: dict):
@@ -79,6 +65,12 @@ def verifyDynamoDbResponse(response):
     statusCode = response['ResponseMetadata']['HTTPStatusCode']
     if response['ResponseMetadata']['HTTPStatusCode'] != statusCode:
         raise ProcessingError(ServerErrorCode.internalServerError, f"DynamoDB failed with code: {statusCode}")
+
+def extract_body(event):
+    try:
+        return event['body']
+    except:
+        raise JSONValidationError("`body` not set!")
 
 def get_fillUps_for_user(user_id: str) -> list:
     table = get_table_resource()
