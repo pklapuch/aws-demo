@@ -1,6 +1,4 @@
-import pytest
 import boto3
-import os
 import json
 from decimal import Decimal
 from moto import mock_aws
@@ -66,12 +64,3 @@ def mock_table():
     )
 
     return table
-
-
-"""
-userID: userID, type: string
-date: timestamp: type: string, timezone: UTC, example: 2024-06-29T13:34:30Z
-cost: double, type: number; currency: USD, example: 34.12
-volume: double, type: number; unit: LITER, example: 40.0
-mileage: double, type: number; unit: KM: example: 113200
-"""

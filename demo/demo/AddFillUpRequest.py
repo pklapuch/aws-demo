@@ -8,31 +8,24 @@ class AddFillUpRequest:
         self.liters = liters
         self.cost = cost
 
-    def test(self):
-        print("")
+    @staticmethod   
+    def decode(json):
+        try:
+            return AddFillUpRequest(json['date'], json['kilometers'], json['liters'], json['cost'])
+        except Exception as error:
+            raise JSONValidationError(f"Invalid JSON for AddFillUpRequest: {error}")
 
-    @staticmethod
-    def getItemJsonFrom(json):
+    def toDynamoDbInsertDict(self, userID):
         item = {}
-
-        try:
-            item['date'] = json['date']
-        except:
-            raise JSONValidationError("`date` not set!")
-    
-        try:
-            item['kilometers'] = Decimal(str(json['kilometers']))
-        except:
-            raise JSONValidationError("`kilometers` not set!")
-        
-        try:
-            item['liters'] = Decimal(str(json['liters']))
-        except:
-            raise JSONValidationError("`liters` not set!")
-        
-        try:
-            item['cost'] = Decimal(str(json['cost']))
-        except:
-            raise JSONValidationError("`cost` not set!")        
-        
+        item['userID'] = userID
+        item['date'] = self.date
+        item ['kilometers'] = Decimal(str(self.kilometers))
+        item ['liters'] = Decimal(str(self.liters))
+        item ['cost'] = Decimal(str(self.cost))
         return item
+    
+    def __eq__(self, other): 
+        if not isinstance(other, AddFillUpRequest):
+            return False
+
+        return self.date == other.date and self.kilometers == other.kilometers and self.liters == other.liters and self.cost == other.cost

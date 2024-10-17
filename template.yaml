@@ -10,7 +10,23 @@ Globals:
 
     LoggingConfig:
       LogFormat: JSON
+
 Resources:
+  AddFillUpHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: AddFillUp
+      StageName: Dev
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - POST
+        MaxAge: 3600
+      Description: Add fill up  to the database
+
   AddFillUpFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -23,10 +39,18 @@ Resources:
       Policies:
       - DynamoDBWritePolicy:
           TableName: FillUp
+      Events:
+        AddFillUp:
+          Type: HttpApi
+          Properties:
+            Path: /fillup
+            Method: POST
+            ApiId: !Ref AddFillUpHttpApi
+        
   
   FillUpTable:
     Type: AWS::DynamoDB::Table
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
     Properties:
       TableName: FillUp
       AttributeDefinitions:

@@ -1,6 +1,6 @@
 import boto3
 import boto3.dynamodb.conditions as conditions
-from requests import get
+from decimal import Decimal
 
 from .ServerErrorCode import ServerErrorCode
 from .AddFillUpRequest import AddFillUpRequest
@@ -37,8 +37,8 @@ def lambda_handler(event, context):
 def post_handler(event, context):
     try:
         body = extract_body(event)
-        item = AddFillUpRequest.getItemJsonFrom(body)
-        userID = event['requestContext']['authorizer']['claims']['sub']
+        item = AddFillUpRequest.decode(body)
+        userID = extract_user_id(event)
         insert_fillup_for_user(userID, item)
     except Exception as error:
         print(f"Error: {error}")
@@ -54,14 +54,20 @@ def method_not_supported(method):
 
 # - HELPERS
 
-def insert_fillup_for_user(user_id: str, item: dict):
-    item['userID'] = user_id
+def insert_fillup_for_user(user_id: str, addRequest: AddFillUpRequest):
+    item = addRequest.toDynamoDbInsertDict(user_id)
     table = get_table_resource()
     response = table.put_item(Item=item)
     verifyDynamoDbResponse(response)
 
 def verifyDynamoDbResponse(response):
-    statusCode = response['ResponseMetadata']['HTTPStatusCode']
+    statusCode: int
+    
+    try:
+        statusCode = response['ResponseMetadata']['HTTPStatusCode']
+    except:
+        raise ProcessingError(ServerErrorCode.internalServerError, f"DynamoDB invalid response")
+    
     if response['ResponseMetadata']['HTTPStatusCode'] != statusCode:
         raise ProcessingError(ServerErrorCode.internalServerError, f"DynamoDB failed with code: {statusCode}")
 
@@ -71,6 +77,12 @@ def extract_body(event):
     except:
         raise JSONValidationError("`body` not set!")
 
+def extract_user_id(event):
+    try:
+        return event['requestContext']['authorizer']['claims']['sub']
+    except:
+        raise JSONValidationError("`userID` not set!")
+    
 def get_fillUps_for_user(user_id: str) -> list:
     table = get_table_resource()
 
