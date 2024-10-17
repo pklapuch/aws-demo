@@ -1,4 +1,5 @@
 import json
+from uuid import uuid4
 import boto3
 import boto3.dynamodb.conditions as conditions
 from decimal import Decimal
@@ -45,18 +46,16 @@ def mapErrorToResponse(error):
     }
 
 def post_handler(event, context):
-    try:
-        body = extract_body(event)
-        item = AddFillUpRequest.decode(body)
-        userID = extract_user_id(event)
-        insert_fillup_for_user(userID, item)
-    except Exception as error:
-        print(f"Error: {error}")
-        raise error
+    userID = extract_user_id(event)
+    body = extract_body(event)
+    addRequest = AddFillUpRequest.decode(body)
+    id = str(uuid4())
+    insert_fillup_for_user(id, userID, addRequest)
 
     body = {
-        'entityID': 'XXXXXXXXXXXX',
+        'entityID': id,
     }
+
     return {
         'statusCode': 200,
         'body': json.dumps(body)
@@ -67,8 +66,8 @@ def method_not_supported(method):
 
 # - HELPERS
 
-def insert_fillup_for_user(user_id: str, addRequest: AddFillUpRequest):
-    item = addRequest.toDynamoDbInsertDict(user_id)
+def insert_fillup_for_user(id: str, user_id: str, addRequest: AddFillUpRequest):
+    item = addRequest.toDynamoDbInsertDict(id, user_id)
     table = get_table_resource()
     response = table.put_item(Item=item)
     verifyDynamoDbResponse(response)

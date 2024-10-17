@@ -47,12 +47,12 @@ Resources:
       AttributeDefinitions:
         - AttributeName: userID
           AttributeType: S
-        - AttributeName: date
+        - AttributeName: id
           AttributeType: S
       KeySchema:
         - AttributeName: userID
           KeyType: HASH
-        - AttributeName: date
+        - AttributeName: id
           KeyType: RANGE
       BillingMode: PROVISIONED
       ProvisionedThroughput:

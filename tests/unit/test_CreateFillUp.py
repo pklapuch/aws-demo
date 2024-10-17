@@ -1,6 +1,5 @@
 import boto3
 import json
-from decimal import Decimal
 from moto import mock_aws
 from demo.demo.app import lambda_handler
 from demo.demo.app import TABLE_NAME
@@ -27,7 +26,17 @@ def test_createFillUp_withValidHttpMethod_andInvalidItem_deliversError():
     assert bodyJson['errorCode'] == ServerErrorCode.invalidInputParameters
 
 @mock_aws
-def test_createFillUp_withValidHttpMethod_andValidItem_succeeds():
+def test_createFillUp_withValidHttpMethod_andValidItem_andWithoutAuth_deliversError():
+    event = loadEvent("create_fillup_without_auth.json")
+    
+    response = lambda_handler(event, {})
+    assert response['statusCode'] == 400
+
+    bodyJson = json.loads(response['body'])
+    assert bodyJson['errorCode'] == ServerErrorCode.invalidInputParameters
+
+@mock_aws
+def test_createFillUp_withValidHttpMethod_andValidItem_withAuth_succeeds():
     mock_table()
 
     event = loadEvent("create_fillup.json")
@@ -54,11 +63,11 @@ def mock_table():
         TableName=TABLE_NAME,
         KeySchema=[
             {"AttributeName": "userID", "KeyType": "HASH"},
-            {"AttributeName": "date", "KeyType": "RANGE"}
+            {"AttributeName": "id", "KeyType": "RANGE"}
         ],
         AttributeDefinitions=[
             {"AttributeName": "userID", "AttributeType": "S"},
-            {"AttributeName": "date", "AttributeType": "S"}
+            {"AttributeName": "id", "AttributeType": "S"}
         ],
         ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
     )

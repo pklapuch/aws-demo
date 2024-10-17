@@ -1,0 +1,9 @@
+{
+    "httpMethod": "POST",
+    "body": {
+        "date": "2024-06-29T13:34:30Z",
+        "cost": 34.12,
+        "liters": 40.0,
+        "kilometers": 113200.8
+    }
+}

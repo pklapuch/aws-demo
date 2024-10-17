@@ -9,9 +9,10 @@ def test_decode_withValidJson_deliversItem():
     assert model == testBundle.model
 
 def test_toDynamoDbInsertDict_deliversDynamoDbInsertDictionary():
+    id = 'entityID'
     userID = 'mock_user'
     testBundle = load_testBundle()
-    dynamoDbInsertDict = testBundle.model.toDynamoDbInsertDict(userID)
+    dynamoDbInsertDict = testBundle.model.toDynamoDbInsertDict(id, userID)
 
     assert dynamoDbInsertDict['userID'] == userID
     assert dynamoDbInsertDict['kilometers'] == Decimal(str(testBundle.model.kilometers))

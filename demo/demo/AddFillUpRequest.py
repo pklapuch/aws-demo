@@ -15,8 +15,9 @@ class AddFillUpRequest:
         except Exception as error:
             raise JSONValidationError(f"Invalid JSON for AddFillUpRequest: {error}")
 
-    def toDynamoDbInsertDict(self, userID):
+    def toDynamoDbInsertDict(self, id, userID):
         item = {}
+        item['id'] = id
         item['userID'] = userID
         item['date'] = self.date
         item ['kilometers'] = Decimal(str(self.kilometers))
