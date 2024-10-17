@@ -1,3 +1,4 @@
+import json
 import boto3
 import boto3.dynamodb.conditions as conditions
 from decimal import Decimal
@@ -15,24 +16,33 @@ def lambda_handler(event, context):
             return post_handler(event, context)
         else:
            return method_not_supported(event['httpMethod'])
-    except ProcessingError as error:
-        return {
-            'statusCode': 400,
-            'errorCode': error.errorCode,
-            'message': str(error.reason)
-        }
-    except JSONValidationError as error:
-        return {
-            'statusCode': 400,
+    except Exception as error:
+        return mapErrorToResponse(error)
+    
+def mapErrorToResponse(error):
+    statusCode = 400
+    body = {}
+
+    if isinstance(error, JSONValidationError):
+        body =  {
             'errorCode': ServerErrorCode.invalidInputParameters,
             'message': str(error.reason)
         }
-    except:
-        return {
-            'statusCode': 400,
+    elif isinstance(error, ProcessingError):
+        body =  {
+            'errorCode': error.errorCode,
+            'message': str(error.reason)
+        }
+    else:
+        body =  {
             'errorCode': 'UNKNOWN',
             'message': 'UNKNOWN'
         }
+    
+    return {
+        'statusCode': statusCode,
+        'body': json.dumps(body)
+    }
 
 def post_handler(event, context):
     try:
@@ -44,10 +54,13 @@ def post_handler(event, context):
         print(f"Error: {error}")
         raise error
 
+    body = {
+        'entityID': 'XXXXXXXXXXXX',
+    }
     return {
-            'statusCode': 200,
-            'entityID': 'ID_100000000',
-        }
+        'statusCode': 200,
+        'body': json.dumps(body)
+    }
 
 def method_not_supported(method):
     raise ProcessingError(ServerErrorCode.unsupportedHttpMehod, f"Unsupported Method: {method}")

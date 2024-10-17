@@ -9,34 +9,34 @@ from demo.demo.app import ServerErrorCode
 @mock_aws
 def test_withUnsupportedHttpMethod__deliversError():
     event = { "httpMethod": "UNKNOWN" }
+    
     response = lambda_handler(event, {})
-    print(f"Respnse: {response}")
-
     assert response['statusCode'] == 400
-    assert response['errorCode'] == ServerErrorCode.unsupportedHttpMehod
+
+    bodyJson = json.loads(response['body'])
+    assert bodyJson['errorCode'] == ServerErrorCode.unsupportedHttpMehod
 
 @mock_aws
 def test_createFillUp_withValidHttpMethod_andInvalidItem_deliversError():
     event = { "httpMethod": "POST" }
-    print(f"Event: {event}")
-
+    
     response = lambda_handler(event, {})
-    print(f"Respnse: {response}")
-
     assert response['statusCode'] == 400
-    assert response['errorCode'] == ServerErrorCode.invalidInputParameters
+
+    bodyJson = json.loads(response['body'])
+    assert bodyJson['errorCode'] == ServerErrorCode.invalidInputParameters
 
 @mock_aws
 def test_createFillUp_withValidHttpMethod_andValidItem_succeeds():
     mock_table()
 
     event = loadEvent("create_fillup.json")
-    print(f"Event: {event}")
 
     response = lambda_handler(event, {})
-    print(f"Respnse: {response}")
-
     assert response['statusCode'] == 200
+
+    bodyJson = json.loads(response['body'])
+    assert bodyJson['entityID'] is not None
 
 def loadEvent(name: str):
     with open(f"events/{name}", 'r') as file:
