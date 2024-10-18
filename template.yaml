@@ -52,6 +52,8 @@ Resources:
       Policies:
       - DynamoDBWritePolicy:
           TableName: FillUp
+      - DynamoDBReadPolicy:
+          TableName: FillUp
       Events:
         AddFillUpEvent:
           Type: Api
@@ -59,6 +61,12 @@ Resources:
             Path: /fillup
             Method: POST
             RestApiId: !Ref AddFillUpHttpApi
+        GetFillUpEvent:
+          Type: Api
+          Properties:
+            Path: /fillup
+            Method: GET
+            RestApiId: !Ref AddFillUpHttpApi            
 
   FillUpTable:
     Type: AWS::DynamoDB::Table

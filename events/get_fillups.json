@@ -1,0 +1,10 @@
+{
+    "httpMethod": "GET",
+    "requestContext": {
+        "authorizer": {
+            "claims": {
+                "sub": "Test-User-1"
+            }
+        }
+    }
+}

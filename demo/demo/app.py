@@ -8,13 +8,18 @@ from .ServerErrorCode import ServerErrorCode
 from .AddFillUpRequest import AddFillUpRequest
 from .JSONValidationError import JSONValidationError
 from .ProcessingError import ProcessingError
+from .FillUp import FillUp
 
 TABLE_NAME = "FillUp"
 
 def lambda_handler(event, context):
     try:
-        if event['httpMethod'] == "POST":
+        method = event['httpMethod']
+
+        if method == "POST":
             return post_handler(event, context)
+        elif method == "GET":
+            return get_handler(event, context)
         else:
            return method_not_supported(event['httpMethod'])
     except Exception as error:
@@ -37,7 +42,7 @@ def mapErrorToResponse(error):
     else:
         body =  {
             'errorCode': 'UNKNOWN',
-            'message': 'UNKNOWN'
+            'message': f'{error}'
         }
     
     return {
@@ -59,6 +64,15 @@ def post_handler(event, context):
     return {
         'statusCode': 200,
         'body': json.dumps(body)
+    }
+
+def get_handler(event, context):
+    userID = extract_user_id(event)
+    fillUps = get_fillUps_for_user(userID)
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps(fillUps)
     }
 
 def method_not_supported(method):
@@ -90,17 +104,23 @@ def extract_user_id(event):
     try:
         return event['requestContext']['authorizer']['claims']['sub']
     except:
-        raise JSONValidationError("`userID` not set!")
+        raise JSONValidationError("`user identity` not set!")
     
 def get_fillUps_for_user(user_id: str) -> list:
     table = get_table_resource()
 
-    response = table.query(
+    dynamoDbResponse = table.query(
         KeyConditionExpression=\
             conditions.Key("userID").eq(f"{user_id}")
     )
     
-    return response["Items"]
+    dynamoDbItems = dynamoDbResponse["Items"]
+    fillUps = list(map(FillUp.decodeFromDynamoDbDict, dynamoDbItems))
+    return list(map(lambda obj: obj.encodeAsJSON(), fillUps))
+    
+def replace_decimal_with_number(value: Decimal):
+    valueStr = str(value)
+    return float(valueStr)
 
 def get_table_resource():
     dynamodb_resource = boto3.resource("dynamodb")

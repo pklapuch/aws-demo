@@ -6,10 +6,22 @@ class EventResourceHelper:
         event = EventResourceHelper.loadEvent(name)
         return EventResourceHelper.mapJsonEventToEventWithStringifiedBody(event)
 
+    def insertUserIdentity(event: dict, userID: str):
+        newEvent = event
+        newEvent["requestContext"]["authorizer"]["claims"]["sub"] = userID
+        return newEvent
+
     @staticmethod
     def mapJsonEventToEventWithStringifiedBody(event):
+        body: str = None
+
+        try:
+            body = event["body"]
+        except:
+            return event
+
         newEvent = event
-        newEvent["body"] = json.dumps(event["body"])
+        newEvent["body"] = json.dumps(body)
         return newEvent
 
     @staticmethod
