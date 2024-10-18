@@ -14,6 +14,7 @@ def test_toDynamoDbInsertDict_deliversDynamoDbInsertDictionary():
     testBundle = load_testBundle()
     dynamoDbInsertDict = testBundle.model.toDynamoDbInsertDict(id, userID)
 
+    assert dynamoDbInsertDict['id'] == id
     assert dynamoDbInsertDict['userID'] == userID
     assert dynamoDbInsertDict['kilometers'] == Decimal(str(testBundle.model.kilometers))
     assert dynamoDbInsertDict['liters'] == Decimal(str(testBundle.model.liters))
