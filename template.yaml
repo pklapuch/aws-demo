@@ -7,9 +7,23 @@ Globals:
   Function:
     Timeout: 30
     MemorySize: 128
-
+    
     LoggingConfig:
       LogFormat: JSON
+
+Parameters:
+  CognitoUserPoolID:
+    Type: String
+    Description: User Pool Name
+    Default: us-east-2_yw6EaLWYa
+  UserPoolArn:
+    Type: String
+    Description: User Pool ARN
+    Default: arn:aws:cognito-idp:us-east-2:471112951175:userpool/us-east-2_yw6EaLWYa
+  Region:
+    Type: String
+    Description: Region
+    Default: us-east-2
 
 Resources:
   AddFillUpHttpApi:
@@ -17,7 +31,14 @@ Resources:
     Properties:
       Name: AddFillUp
       StageName: Dev
-      Description: Add fill up  to the database
+      Description: Add fill up to the database
+      Auth:
+        DefaultAuthorizer: MyAuthorizer
+        Authorizers:
+          MyAuthorizer:
+            UserPoolArn: !Ref UserPoolArn
+            Identity:
+              Header: Authorization
 
   AddFillUpFunction:
     Type: AWS::Serverless::Function

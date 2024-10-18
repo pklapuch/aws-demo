@@ -84,10 +84,7 @@ def verifyDynamoDbResponse(response):
         raise ProcessingError(ServerErrorCode.internalServerError, f"DynamoDB failed with code: {statusCode}")
 
 def extract_body(event):
-    try:
-        return event['body']
-    except:
-        raise JSONValidationError("`body` not set!")
+    return json.loads(event['body'])
 
 def extract_user_id(event):
     try:
