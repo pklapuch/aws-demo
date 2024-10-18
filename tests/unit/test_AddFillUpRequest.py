@@ -14,11 +14,11 @@ def test_toDynamoDbInsertDict_deliversDynamoDbInsertDictionary():
     testBundle = load_testBundle()
     dynamoDbInsertDict = testBundle.model.toDynamoDbInsertDict(id, userID)
 
-    assert dynamoDbInsertDict['id'] == id
-    assert dynamoDbInsertDict['userID'] == userID
-    assert dynamoDbInsertDict['kilometers'] == Decimal(str(testBundle.model.kilometers))
-    assert dynamoDbInsertDict['liters'] == Decimal(str(testBundle.model.liters))
-    assert dynamoDbInsertDict['cost'] == Decimal(str(testBundle.model.cost))
+    expectedDict = testBundle.dynamoDbJson
+    expectedDict['id'] = id
+    expectedDict['userID'] = userID
+
+    assert dynamoDbInsertDict == expectedDict
 
 def test_decode_withInvalidJson_throwsException():
     json = {}
@@ -33,13 +33,20 @@ def test_decode_withInvalidJson_throwsException():
 
 # - HELPERS    
     
-TestBundle = namedtuple('TestBundle', ['json', 'model'])    
+TestBundle = namedtuple('TestBundle', ['json', 'dynamoDbJson', 'model'])    
 def load_testBundle():
     json = {
         "date": "2024-06-29T13:34:30Z",
         "kilometers": 100.3,
         "liters": 30.3,
         "cost": 25.2
+    }
+
+    dynamoDbJson = {
+        "date": "2024-06-29T13:34:30Z",
+        "kilometers": Decimal(str(100.3)),
+        "liters": Decimal(str(30.3)),
+        "cost": Decimal(str(25.2))
     }
 
     model = AddFillUpRequest(
@@ -49,4 +56,4 @@ def load_testBundle():
         25.2
     )
 
-    return TestBundle(json, model)
+    return TestBundle(json, dynamoDbJson, model)
