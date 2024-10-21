@@ -1,8 +1,14 @@
 from .ProcessingError import ProcessingError
 from .ServerErrorCode import ServerErrorCode
-from .CreateFillUpHandler import create_handler
-from .GetFillUpHandler import get_handler
+from .CreateFillUpHandler import CreateFillUpHandler
+from .GetFillUpHandler import GetFillUpHandler
 from .ErrorMapper import mapErrorToResponse
+
+class FillUpFunction:
+    createHandler = CreateFillUpHandler().create_handler
+    getHandler = GetFillUpHandler().get_handler
+
+fillUpFunction = FillUpFunction()
 
 def lambda_handler(event, context):
     print(event)
@@ -11,9 +17,9 @@ def lambda_handler(event, context):
         method = event['httpMethod']
 
         if method == "POST":
-            return create_handler(event, context)
+            return fillUpFunction.createHandler(event, context)
         elif method == "GET":
-            return get_handler(event, context)
+            return fillUpFunction.getHandler(event, context)
         else:
            return method_not_supported(event['httpMethod'])
     except Exception as error:

@@ -6,24 +6,26 @@ from .FillUp import FillUp
 
 TABLE_NAME = "FillUp"
 
-def get_handler(event: dict, context):
-    userID = EventUtility.extract_user_id(event)
-    fillUps = get_fillUps_for_user(userID)
+class GetFillUpHandler:
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps(fillUps)
-    }
+    def get_handler(self, event: dict, context):
+        userID = EventUtility.extract_user_id(event)
+        fillUps = self.get_fillUps_for_user(userID)
 
-def get_fillUps_for_user(user_id: str) -> list:
-    table = DynamoDbUtility.get_table_resource(TABLE_NAME)
+        return {
+            'statusCode': 200,
+            'body': json.dumps(fillUps)
+        }
 
-    dynamoDbResponse = table.query(
-        KeyConditionExpression=\
-            conditions.Key("userID").eq(f"{user_id}")
-    )
+    def get_fillUps_for_user(self, user_id: str) -> list:
+        table = DynamoDbUtility.get_table_resource(TABLE_NAME)
 
-    DynamoDbUtility.verify_response(dynamoDbResponse)
-    dynamoDbItems = dynamoDbResponse["Items"]
-    fillUps = list(map(FillUp.decodeFromDynamoDbDict, dynamoDbItems))
-    return list(map(lambda obj: obj.encodeAsJSON(), fillUps))
+        dynamoDbResponse = table.query(
+            KeyConditionExpression=\
+                conditions.Key("userID").eq(f"{user_id}")
+        )
+
+        DynamoDbUtility.verify_response(dynamoDbResponse)
+        dynamoDbItems = dynamoDbResponse["Items"]
+        fillUps = list(map(FillUp.decodeFromDynamoDbDict, dynamoDbItems))
+        return list(map(lambda obj: obj.encodeAsJSON(), fillUps))
