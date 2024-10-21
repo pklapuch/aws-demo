@@ -13,6 +13,8 @@ from .FillUp import FillUp
 TABLE_NAME = "FillUp"
 
 def lambda_handler(event, context):
+    print(event)
+
     try:
         method = event['httpMethod']
 
