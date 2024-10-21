@@ -1,18 +1,17 @@
 from moto import mock_aws
 from demo.demo.app import lambda_handler
+from demo.demo.GetFillUpHandler import TABLE_NAME
 from demo.demo.FillUp import FillUp
 from .Helpers.FillUpMockHelper import FillUpMockHelper
 from .Helpers.EventResourceHelper import EventResourceHelper
 from decimal import Decimal
-import json
-import json
 import json
 
 @mock_aws
 def test_createFillUp_withValidHttpMethod_andValidItem_withAuth_succeeds():
     userID = "mock_user_id"
     storedItem = makeTestFillUp(userID)
-    FillUpMockHelper.create_table_with_item(storedItem.encodeAsDynamoDbDict())
+    FillUpMockHelper.create_table_with_item(storedItem.encodeAsDynamoDbDict(), TABLE_NAME)
 
     event = EventResourceHelper.loadEventByStringifyingBody("get_fillups.json")
     eventWithAuth = EventResourceHelper.insertUserIdentity(event, userID)

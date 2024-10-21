@@ -1,7 +1,7 @@
 import json
 from moto import mock_aws
 from demo.demo.app import lambda_handler
-from demo.demo.app import TABLE_NAME
+from demo.demo.CreateFillUpHandler import TABLE_NAME
 from demo.demo.app import ServerErrorCode
 from .Helpers.EventResourceHelper import EventResourceHelper
 from .Helpers.FillUpMockHelper import FillUpMockHelper
@@ -38,7 +38,7 @@ def test_createFillUp_withValidHttpMethod_andValidItem_andWithoutAuth_deliversEr
 
 @mock_aws
 def test_createFillUp_withValidHttpMethod_andValidItem_withAuth_succeeds():
-    FillUpMockHelper.create_table()
+    FillUpMockHelper.create_table(TABLE_NAME)
 
     event = EventResourceHelper.loadEventByStringifyingBody("create_fillup.json")
 

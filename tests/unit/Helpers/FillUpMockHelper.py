@@ -1,17 +1,16 @@
 import boto3
-from demo.demo.app import TABLE_NAME
 
 class FillUpMockHelper:
     @staticmethod
-    def create_table_with_item(item):
-        table = FillUpMockHelper.create_table()
+    def create_table_with_item(item, tableName):
+        table = FillUpMockHelper.create_table(tableName)
         table.put_item(Item=item)
 
     @staticmethod
-    def create_table():
+    def create_table(tableName):
         dynamodb_resource = boto3.resource("dynamodb")
         table = dynamodb_resource.create_table(
-            TableName=TABLE_NAME,
+            TableName=tableName,
             KeySchema=[
                 {"AttributeName": "userID", "KeyType": "HASH"},
                 {"AttributeName": "id", "KeyType": "RANGE"}
